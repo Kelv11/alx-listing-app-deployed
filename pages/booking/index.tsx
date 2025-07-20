@@ -106,7 +106,7 @@ export default function BookingPage() {
 
     try {
       // Combine form data with booking details
-      const finalBookingData = {
+      const bookingData = {
         ...formData,
         propertyId: bookingDetails.propertyId,
         checkIn: bookingDetails.startDate,
@@ -117,7 +117,7 @@ export default function BookingPage() {
       };
 
       // Replace with your actual booking API endpoint
-      // const response = await axios.post("/api/bookings", finalBookingData);
+      // const response = await axios.post("/api/bookings", bookingData);
 
       // Simulate success
       setSuccess(true);
