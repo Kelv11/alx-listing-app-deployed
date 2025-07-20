@@ -15,6 +15,7 @@ export interface ButtonProps {
   className?: string;
   disabled?: boolean;
 }
+
 export interface Address {
   state: string;
   city: string;
@@ -37,9 +38,10 @@ export interface PropertyProps {
   offers: Offers;
   image: string;
   discount: string;
+  description?: string;
+  amenities?: string[];
+  reviews?: ReviewProps[];
 }
-
-// interfaces/index.ts
 
 export interface AddressProps {
   street: string;
@@ -47,21 +49,6 @@ export interface AddressProps {
   state: string;
   country: string;
   zipCode: string;
-}
-
-export interface PropertyProps {
-  id: string;
-  name: string;
-  description: string;
-  image: string;
-  images?: string[]; // Additional images for gallery
-  rating: number;
-  price: number;
-  Address: AddressProps;
-  category: string[];
-  amenities?: string[];
-  reviews?: ReviewProps[];
-  host?: HostProps;
 }
 
 export interface ReviewProps {
