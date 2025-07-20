@@ -39,21 +39,20 @@ export default function BookingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [property, setProperty] = useState<PropertyProps | null>(null);
   const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(
     null
   );
   const [fetchingProperty, setFetchingProperty] = useState(true);
 
-  // Get booking data from query params
-  const { propertyId, checkIn, checkOut, guests, totalNights, totalPrice } =
-    router.query;
-
-  // Fetch property details when component mounts
+  // Fetch property details when component mounts and router is ready
   useEffect(() => {
-    if (!router.isReady) return;
+    // Wait for router to be ready
+    if (!router.isReady) {
+      return;
+    }
 
     const fetchPropertyDetails = async () => {
+      // Get booking data from query params
       const { propertyId, checkIn, checkOut, guests, totalNights, totalPrice } =
         router.query;
 
@@ -69,10 +68,10 @@ export default function BookingPage() {
 
         const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "/api";
         const response = await axios.get(`${baseUrl}/properties/${propertyId}`);
-        const propertyData = response.data;
+        const propertyData: PropertyProps = response.data;
 
         // Calculate booking details
-        const bookingData: BookingDetails = {
+        const calculatedBookingData: BookingDetails = {
           propertyName: propertyData.name,
           price: propertyData.price,
           bookingFee: 65, // Fixed service fee
@@ -85,8 +84,7 @@ export default function BookingPage() {
           propertyId: propertyId as string,
         };
 
-        setProperty(propertyData);
-        setBookingDetails(bookingData);
+        setBookingDetails(calculatedBookingData);
       } catch (err) {
         console.error("Error fetching property details:", err);
         setError("Failed to load property details. Please try again.");
@@ -99,14 +97,16 @@ export default function BookingPage() {
   }, [router.isReady, router.query]);
 
   const handleBookingSubmit = async (formData: BookingFormData) => {
-    if (!bookingDetails) return;
+    if (!bookingDetails) {
+      return;
+    }
 
     setLoading(true);
     setError(null);
 
     try {
       // Combine form data with booking details
-      const bookingData = {
+      const finalBookingData = {
         ...formData,
         propertyId: bookingDetails.propertyId,
         checkIn: bookingDetails.startDate,
@@ -117,18 +117,19 @@ export default function BookingPage() {
       };
 
       // Replace with your actual booking API endpoint
-      // const response = await axios.post("/api/bookings", bookingData);
+      // const response = await axios.post("/api/bookings", finalBookingData);
 
       // Simulate success
       setSuccess(true);
       setTimeout(() => {
         router.push(`/booking/confirmation/12345`);
       }, 2000);
-    } catch (error: any) {
-      setError(
-        error.response?.data?.message ||
-          "Failed to submit booking. Please try again."
-      );
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to submit booking. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -180,6 +181,14 @@ export default function BookingPage() {
               <p className="text-red-700">{error}</p>
             </div>
           </div>
+          <div className="mt-4">
+            <button
+              onClick={() => router.back()}
+              className="text-blue-600 hover:text-blue-800 underline"
+            >
+              ← Go back to property
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -225,6 +234,12 @@ export default function BookingPage() {
       <div className="container mx-auto p-6">
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-gray-600">No booking details found.</p>
+          <button
+            onClick={() => router.back()}
+            className="mt-4 text-blue-600 hover:text-blue-800 underline"
+          >
+            ← Go back to property
+          </button>
         </div>
       </div>
     );
