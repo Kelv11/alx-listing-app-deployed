@@ -65,13 +65,11 @@ const mockReviews = [
 ];
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { id } = req.query;
-
   if (req.method !== "GET") {
     return res.status(405).json({ message: "Method not allowed" });
   }
 
   // Return mock reviews for any property ID
-  // In a real app, you would filter reviews by property ID using the id parameter
+  // In a real app, you would filter reviews by property ID using req.query.id
   res.status(200).json(mockReviews);
 }

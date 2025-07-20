@@ -7,20 +7,6 @@ import OrderSummary from "@/components/booking/OrderSummary";
 import CancellationPolicy from "@/components/booking/CancellationPolicy";
 import { PropertyProps } from "@/interfaces";
 
-interface BookingFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  cardNumber: string;
-  expirationDate: string;
-  cvv: string;
-  billingAddress: string;
-  propertyId?: string;
-  checkIn?: string;
-  checkOut?: string;
-}
-
 interface BookingDetails {
   propertyName: string;
   price: number;
@@ -36,9 +22,7 @@ interface BookingDetails {
 
 export default function BookingPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(
     null
   );
@@ -95,45 +79,6 @@ export default function BookingPage() {
 
     fetchPropertyDetails();
   }, [router.isReady, router.query]);
-
-  const handleBookingSubmit = async (formData: BookingFormData) => {
-    if (!bookingDetails) {
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Combine form data with booking details
-      const bookingData = {
-        ...formData,
-        propertyId: bookingDetails.propertyId,
-        checkIn: bookingDetails.startDate,
-        checkOut: bookingDetails.endDate,
-        totalAmount: bookingDetails.total + bookingDetails.bookingFee,
-        totalNights: bookingDetails.totalNights,
-        guests: bookingDetails.guests,
-      };
-
-      // Replace with your actual booking API endpoint
-      // const response = await axios.post("/api/bookings", bookingData);
-
-      // Simulate success
-      setSuccess(true);
-      setTimeout(() => {
-        router.push(`/booking/confirmation/12345`);
-      }, 2000);
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to submit booking. Please try again.";
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Loading state while fetching property
   if (fetchingProperty) {
@@ -194,41 +139,6 @@ export default function BookingPage() {
     );
   }
 
-  if (success) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="max-w-md mx-auto text-center bg-green-50 p-8 rounded-lg border border-green-200">
-          <div className="text-green-500 mb-4">
-            <svg
-              className="mx-auto h-16 w-16"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Booking Confirmed!
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Your booking has been successfully submitted. You will receive a
-            confirmation email shortly.
-          </p>
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 mx-auto"></div>
-          <p className="text-sm text-gray-500 mt-2">
-            Redirecting to confirmation page...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   if (!bookingDetails) {
     return (
       <div className="container mx-auto p-6">
@@ -275,7 +185,7 @@ export default function BookingPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-6">
-          <BookingForm onSubmit={handleBookingSubmit} loading={loading} />
+          <BookingForm />
           <CancellationPolicy />
         </div>
         <div className="lg:sticky lg:top-6 lg:self-start">
